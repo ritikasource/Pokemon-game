@@ -104,7 +104,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,10f))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,10f))
     }
 }
 
@@ -156,11 +156,11 @@ class myThread: Thread
                 runOnUiThread{
                     mMap!!.clear()
                 val sydney = LatLng(mlocation!!.longitude, mlocation!!.latitude)
-                mMap!!.addMarker(MarkerOptions()
+                mMap.addMarker(MarkerOptions()
                         .position(sydney)
                         .title("Me")
                         .snippet("Here's my location")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.p1)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.p1)))
                 }
                 Thread.sleep(1000)
             }catch (ex:Exception){}
