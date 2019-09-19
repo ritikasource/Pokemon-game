@@ -37,13 +37,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    var ACCESSLOCATION=143
-    fun checkPermission()
-    {
-        if(Build.VERSION.SDK_INT>=23)
-        {
-            if(ActivityCompat.checkSelfPermission(this,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED)
+    var ACCESSLOCATION = 143
+    fun checkPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {
+            if (ActivityCompat.checkSelfPermission(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
 
 
                 requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), ACCESSLOCATION)
@@ -51,41 +49,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         getLocation()
     }
-           fun getLocation()
 
-           {
-                  Toast.makeText(this,"User Location access is on",Toast.LENGTH_LONG).show()
+    fun getLocation() {
+        Toast.makeText(this, "User Location access is on", Toast.LENGTH_LONG).show()
 
-               var mylocation=MyLocationListener()
+        var mylocation = MyLocationListener()
 
-               var LocationManager=getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        var locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-               LocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3,3f,mylocation)
-               var thred=myThread()
-               thred.start()
-           }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3f, mylocation)
+        var thred = myThread()
+        thred.start()
+    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>?, grantResults: IntArray?) {
-        when(requestCode)
-        {
-            ACCESSLOCATION->
-            {
-                if(grantResults!![0]==PackageManager.PERMISSION_GRANTED)
+        when (requestCode) {
+            ACCESSLOCATION -> {
+                if (grantResults!![0] == PackageManager.PERMISSION_GRANTED)
 
                     getLocation()
-                else
-                {
-                    Toast.makeText(this,"Access not granted to your location",Toast.LENGTH_LONG).show()
+                else {
+                    Toast.makeText(this, "Access not granted to your location", Toast.LENGTH_LONG).show()
                 }
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
-
-
-
-
 
 
     /**
@@ -100,71 +89,67 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
 
 
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,10f))
     }
-}
 
-var mlocation:Location?=null
+
+    var mlocation: Location? = null
 
 //to get the user location
 
-  class MyLocationListener: LocationListener
-{
+    inner class MyLocationListener : LocationListener {
 
-    constructor()
-    {
-        mlocation=Location("Start")
-        mlocation!!.longitude=0.0
-        mlocation!!.latitude=0.0
+        constructor() {
+            mlocation = Location("Start")
+            mlocation!!.longitude = 0.0
+            mlocation!!.latitude = 0.0
+
+        }
+
+        override fun onLocationChanged(location: Location?) {
+            mlocation = location
+        }
+
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onProviderEnabled(provider: String?) {
+            //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
+        override fun onProviderDisabled(provider: String?) {
+            // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
 
     }
 
- override fun onLocationChanged(location: Location?) {
-     mlocation=location
- }
+    inner class myThread : Thread {
+        constructor() : super() {
 
- override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-     //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
- }
+        }
 
- override fun onProviderEnabled(provider: String?) {
-    //TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
- }
+        override fun run() {
+            while (true) {
 
- override fun onProviderDisabled(provider: String?) {
-    // TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
- }
+                try {
+                    runOnUiThread {
+                        mMap!!.clear()
+                        val sydney = LatLng(mlocation!!.longitude, mlocation!!.latitude)
 
-}
-
-class myThread: Thread
-{
- constructor():super()
- {
-
- }
-
-    override fun run() {
-        while (true)
-        {
-
-            try {
-                runOnUiThread{
-                    mMap!!.clear()
-                val sydney = LatLng(mlocation!!.longitude, mlocation!!.latitude)
-                mMap.addMarker(MarkerOptions()
-                        .position(sydney)
-                        .title("Me")
-                        .snippet("Here's my location")
-                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.p1)))
+                        mMap.addMarker(MarkerOptions()
+                                .position(sydney)
+                                .title("Me")
+                                .snippet("Here's my location")
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.p1)))
+                        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 10f))
+                    }
+                    Thread.sleep(1000)
+                } catch (ex: Exception) {
                 }
-                Thread.sleep(1000)
-            }catch (ex:Exception){}
 
+            }
         }
     }
 }
